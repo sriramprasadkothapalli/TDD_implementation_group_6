@@ -17,7 +17,7 @@ Pair A member names and roles
 
 ## Design overview
 
-![alt text](UML/UML.jpeg)
+![UML diagram](https://github.com/sriramprasadkothapalli/TDD_implementation_group_6/blob/main/UML/version_1.jpeg)
 
 ## Installation instructions
 
