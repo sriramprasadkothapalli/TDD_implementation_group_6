@@ -17,9 +17,9 @@ namespace mathlib {
     T clamp(T value, T min_v, T max_v);
 
     /**
-     * @brief returns the sgn of a value
+     * @brief returns the sign of a value
      * @details implementation of a generic sign function
-     * @param val value who sign is to checked
+     * @param val value whoes sign is to checked
      * @return one of {-1, 0, 1}
      */
     template<typename T>
