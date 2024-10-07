@@ -19,3 +19,4 @@ cpp-boilerplate*/
 submission*/
 config-clang*
 gitTest/
+.cache/

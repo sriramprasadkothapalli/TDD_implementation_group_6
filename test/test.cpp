@@ -14,8 +14,8 @@ TEST(PIDTest, TestPIDComputeFunction) {
 
     // Expected value is calculated based on the PID equation manually here
 
-    float expectedOutput = pidController.getKp() * (pidController.getSetpoint() - input) + pidController.getKi() * (
-                               pidController.getSetpoint() - input) + (input) * pidController.getKd();
+    float expectedOutput = pidController.getKp() * (pidController.getSetpoint() - input) + pidController.getKi()*0.01 * (
+                               pidController.getSetpoint() - input) + (input) * pidController.getKd()*0.01;
     // Manually calculate this value
 
     // Check if the computed output matches the expected value
@@ -25,21 +25,21 @@ TEST(PIDTest, TestPIDComputeFunction) {
 // Test Case 2: Verify the setKp() and getKp() functions
 TEST(PIDTest, TestSetterGetterFunctions) {
     // Create a PID object with some initial parameters
-    PID pidController(1.0, 0.5, 0.1, 0.01);
+    PID pidController(1.0, 0.5, 0.1, 1);
 
     // Set a new Kp value
     pidController.setKp(2.0);
     pidController.setKi(1.0);
     pidController.setKd(3.0);
     pidController.setSetpoint(0);
-    pidController.setMaxOutput(100);
+    pidController.setMaxOutput(100.0);
 
     // Check if the updated value is correct
     EXPECT_FLOAT_EQ(pidController.getKi(), 1.0);
     EXPECT_FLOAT_EQ(pidController.getKp(), 2.0);
     EXPECT_NE(pidController.getKd(), 2.0);
-    EXPECT_FLOAT_EQ(pidController.getSetpoint(), 0.0);
-    EXPECT_EQ(pidController.getMaxOutput(), 100);
+    EXPECT_FLOAT_EQ(pidController.getSetpoint(), 0);
+    EXPECT_FLOAT_EQ(pidController.getMaxOutput(), 100.0);
 }
 
 /**

@@ -114,7 +114,7 @@ if (WANT_COVERAGE)
             NAME test_coverage          # target name
             # EXECUTABLE ctest || true    # what to run inside the build directory?
             #                             #   '|| true' --> continue coverage even if ctest failed
-            EXECUTABLE ctest     # what to run inside the build directory?
+            EXECUTABLE ctest --output-on-failure    # what to run inside the build directory?
             EXCLUDE
             "app/main.cpp"     # Unit test does not run app, so don't analyze it
             "*gtest*"          # Don't analyze googleTest code
@@ -125,7 +125,7 @@ if (WANT_COVERAGE)
     # Use gcovr insetad of lcov if you want to see branch coverage as well
     setup_target_for_coverage_gcovr_html( # use gcovr to generate coverage report
             NAME app_coverage          # target name
-            EXECUTABLE shell-app       # what to run inside the build directory?
+            EXECUTABLE pid_controller      # what to run inside the build directory?
             EXCLUDE
             "test/test.cpp"    # App does not run unit test, so don't analyze it
             "test/main.cpp"    # App does not run unit test, so don't analyze it
