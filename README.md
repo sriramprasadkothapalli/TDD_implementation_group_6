@@ -17,7 +17,7 @@ Pair A member names and roles
 
 ## Design overview
 
-insert UML here and basic explanation
+![alt text](UML/UML.jpeg)
 
 ## Installation instructions
 
@@ -31,7 +31,7 @@ insert UML here and basic explanation
 # Compile and build the project:
   cmake --build build/ --clean-first --verbose
 # Run program:
-  ./build/app/<name>
+  ./build/app/pid_controller
 # Run tests:
   ctest --test-dir build/
 # Build docs:
