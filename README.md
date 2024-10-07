@@ -1,30 +1,30 @@
-# cpp-boilerplate-v2
+# TDD_implementation_group_6
 
-# C++ Boilerplate v2 Badges
+
+# TDD implementation group 6 Badges
 ![CICD Workflow status](https://github.com/TommyChangUMD/cpp-boilerplate-v2/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg) [![codecov](https://codecov.io/gh/TommyChangUMD/cpp-boilerplate-v2/branch/main/graph/badge.svg)](https://codecov.io/gh/TommyChangUMD/cpp-boilerplate-v2) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
 
 ## Overview
 
 PID Controller implementation for ACME Robotics. This is part of Test Driven Development Assignment.
 <br>TDD group number 6 Pair A <br>
-Pair A member names and roles 
+Pair A member names and roles
 
-| Role / Part | Part 1            | Part 2            |
-|-------------|-------------------|-------------------|
-| Navigator   | Sri ram Prasad Kothapalli    | Anirudh Swarankar |
-| Driver      | Anirudh Swarankar | Sri ram Prasad Kothapalli    |
+| Role / Part | Part 1                    | Part 2 |
+|-------------|---------------------------|--------|
+| Navigator   | Sri ram Prasad Kothapalli |        |
+| Driver      | Anirudh Swarankar         |        |
 
-## Design overview 
+## Design overview
 
 insert UML here and basic explanation
 
+## Installation instructions
 
-## Installation instructions 
 ```bash
 # Download the code:
-  git clone <url>
-  cd PID_controller_A
+  git clone https://github.com/sriramprasadkothapalli/TDD_implementation_group_6.git
+  cd TDD_implementation_group_6
 # Configure the project and generate a native build system:
   # Must re-run this command whenever any CMakeLists.txt file has been changed.
   cmake -S ./ -B build/
@@ -45,4 +45,5 @@ insert UML here and basic explanation
 ```
 
 ## code credit
+
 https://github.com/tttapa/Control-Surface-Motor-Fader/blob/7fda1169f57cdb3e7887d1cc1c9ae9a797ea0afa/Motor-Controller/Controller.hpp
