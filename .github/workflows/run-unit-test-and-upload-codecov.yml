@@ -1,3 +1,9 @@
+- name: Run Tests
+  run: |
+    cd build
+    ctest --output-on-failure
+  continue-on-error: true
+where to do this in my yaml file
 ##############################################################################
 #
 # GitGub CI workflow syntax spec:
@@ -43,18 +49,13 @@ jobs:
           sudo apt update
           sudo apt install -y software-properties-common
           sudo apt install -y doxygen lcov gcovr
-      # Configure CMake and build the executables
-      - name: Configure CMake and Build
+
+      # Build, run unit test, and generate coverage report
+      - name: Configure CMake flags and build exectables
         run: |
           cmake -D WANT_COVERAGE=ON -D CMAKE_BUILD_TYPE=Debug -S ./ -B build/
-          cmake --build build/ --clean-first --target all
+          cmake --build build/ --clean-first --target all coverage
 
-      # Run tests with ctest and allow errors
-      - name: Run Tests
-        run: |
-          cd build
-          ctest --output-on-failure
-        continue-on-error: true  # Allow test failures without stopping the workflow
       # Upload coverage result to CodeCov
       - name: Upload coverage result to CodeCov
         uses: codecov/codecov-action@v3
@@ -63,4 +64,3 @@ jobs:
           files: ${{github.workspace}}/build/coverage.info
           fail_ci_if_error: false # optional (default = false)
           verbose: true # optional (default = false)
-
