@@ -7,26 +7,37 @@ public:
     float update(uint16_t input);
 
     void setKp(float kp);
+
     [[nodiscard]] float getKp() const;
 
     void setKi(float ki);
+
     [[nodiscard]] float getKi() const;
 
     void setKd(float kd);
+
     [[nodiscard]] float getKd() const;
 
+    // Set the cutoff frequency (-3 dB point) of the exponential moving average
+    // filter that is applied to the input before taking the difference for
+    // computing the derivative term.
     void setEMACutoff(float f_c);
 
     void setSetpoint(uint16_t setpoint);
+
     [[nodiscard]] uint16_t getSetpoint() const;
 
     void setMaxOutput(float maxOutput);
+
     [[nodiscard]] float getMaxOutput() const;
 
     void resetActivityCounter();
+
     void setActivityTimeout(float s);
+
     [[nodiscard]] float getActivityTimeout() const;
 
+    /// Reset the sum of the previous errors to zero.
     void resetIntegral();
 
     ~PIDImpl() = default;
@@ -46,135 +57,153 @@ private:
     uint16_t _setpoint = 0; ///< Position reference.
 };
 
-PIDImpl::PIDImpl(float kp, float ki, float kd, float Ts, float f_c, float maxOutput) {
-    // Constructor
-}
-
-float PIDImpl::update(uint16_t input) {
-    // Update function
-    return 0;
-}
-
 void PIDImpl::setKp(float kp) {
-    // Set proportional gain
+    this->_kp = kp;
 }
 
 float PIDImpl::getKp() const {
-    // Get proportional gain
-    return 0; 
+    return this->_kp;
 }
 
 void PIDImpl::setKi(float ki) {
-    // Set integral gain
+    this->_ki_Ts = ki * this->Ts;
 }
 
 float PIDImpl::getKi() const {
-    // Get integral gain
-    return 0; // Placeholder
+    return (this->_ki_Ts / this->Ts);
 }
 
 void PIDImpl::setKd(float kd) {
-    // Set derivative gain
+    this->_kd_Ts = kd * this->Ts;
 }
 
 float PIDImpl::getKd() const {
-    // Get derivative gain
-    return 0; // Placeholder
+    return (this->_kd_Ts / this->Ts);
+}
+
+PIDImpl::PIDImpl(float kp, float ki, float kd, float Ts, float f_c, float maxOutput)
+    : Ts(Ts) {
+    this->setMaxOutput(maxOutput);
+    this->setKp(kp);
+    this->setKi(ki);
+    this->setKd(kd);
+    this->setEMACutoff(f_c);
+}
+
+float PIDImpl::update(uint16_t input) {
+    // The error is the difference between the reference (setpoint) and the
+    // actual position (input)
+    int16_t error = _setpoint - input;
+    // The integral or sum of current and previous errors
+    int32_t newIntegral = _integral + error;
+    // Compute the difference between the current and the previous input,
+    // but compute a weighted average using a factor α ∊ (0,1]
+    float diff = _emaAlpha * (_prevInput - static_cast<float>(input));
+    // Update the average
+    _prevInput -= diff;
+
+    // Check if we can turn off the motor
+    if (_activityCount >= _activityThres && _activityThres) {
+        float filtError = static_cast<float>(_setpoint) - _prevInput;
+        if (filtError >= static_cast<float>(-_errThres) && filtError <= static_cast<float>(_errThres)) {
+            _errThres = 2; // hysteresis
+            return 0;
+        } else {
+            _errThres = 1;
+        }
+    } else {
+        ++_activityCount;
+        _errThres = 1;
+    }
+
+    bool backward = false;
+    int32_t calcIntegral = backward ? newIntegral : _integral;
+
+    // Standard PID rule
+    float output = _kp * static_cast<float>(error) + _ki_Ts * static_cast<float>(calcIntegral) + _kd_Ts * diff;
+
+    // Clamp and anti-windup
+    if (output > _maxOutput)
+        output = _maxOutput;
+    else if (output < -_maxOutput)
+        output = -_maxOutput;
+    else
+        _integral = newIntegral;
+
+    return output;
 }
 
 void PIDImpl::setEMACutoff(float f_c) {
-    // Set cutoff frequency
+    float f_n = f_c * this->Ts; // normalized sampling frequency
+    this->_emaAlpha = f_c == 0 ? 1 : mathlib::calcAlphaEMA(f_n);
 }
 
 void PIDImpl::setSetpoint(uint16_t setpoint) {
-    // Set setpoint
+    if (this->_setpoint != setpoint) this->_activityCount = 0;
+    this->_setpoint = setpoint;
 }
 
 uint16_t PIDImpl::getSetpoint() const {
-    // Get setpoint
-    return 0; // Placeholder
+    return _setpoint;
 }
 
 void PIDImpl::setMaxOutput(float maxOutput) {
-    // Set maximum output
+    this->_maxOutput = mathlib::clamp(static_cast<double>(maxOutput), -255.0, 255.0);
 }
 
 float PIDImpl::getMaxOutput() const {
-    // Get maximum output
-    return 0; // Placeholder
-}
-
-void PIDImpl::resetActivityCounter() {
-    // Reset activity counter
+    return this->_maxOutput;
 }
 
 void PIDImpl::setActivityTimeout(const float s) {
-    // Set activity timeout
+    if (s == 0)
+        _activityThres = 0;
+    else
+        _activityThres = static_cast<uint16_t>(s / Ts) == 0 ? 1 : static_cast<uint16_t>(s / Ts);
 }
 
 float PIDImpl::getActivityTimeout() const {
-    // Get activity timeout
-    return 0; // Placeholder
+    return _activityThres;
+}
+
+void PIDImpl::resetActivityCounter() {
+    this->_activityCount = 0;
 }
 
 void PIDImpl::resetIntegral() {
-    // Reset integral
+    this->_integral = 0;
 }
 
 PID::PID(float kp, float ki, float kd, float Ts, float f_c, float maxOutput) {
-    // Constructor
+    impl = std::make_shared<PIDImpl>(kp, ki, kd, Ts, f_c, maxOutput);
 }
 
 float PID::update(uint16_t input) const {
-    // Update function
-    return 0; // Placeholder
+    return impl->update(input);
 }
 
-void PID::setKp(float kp) const {
-    // Set proportional gain
-}
+void PID::setKp(float kp) const { impl->setKp(kp); }
 
-void PID::setKi(float ki) const {
-    // Set integral gain
-}
+void PID::setKi(float ki) const { impl->setKi(ki); }
 
-void PID::setKd(float kd) const {
-    // Set derivative gain
-}
+void PID::setKd(float kd) const { impl->setKd(kd); }
 
-float PID::getKp() const {
-    // Get proportional gain
-    return 0; // Placeholder
-}
+float PID::getKp() const { return impl->getKp(); }
 
-float PID::getKi() const {
-    // Get integral gain
-    return 0; // Placeholder
-}
+float PID::getKi() const { return impl->getKi(); }
 
-float PID::getKd() const {
-    // Get derivative gain
-    return 0; // Placeholder
-}
+float PID::getKd() const { return impl->getKd(); }
 
 void PID::setSetpoint(uint16_t setpoint) const {
-    // Set setpoint
+    impl->setSetpoint(setpoint);
 }
 
-uint16_t PID::getSetpoint() const {
-    // Get setpoint
-    return 0; // Placeholder
-}
+uint16_t PID::getSetpoint() const { return impl->getSetpoint(); }
 
-void PID::setMaxOutput(float maxOutput) const {
-    // Set maximum output
-}
+void PID::setMaxOutput(float maxOutput) const { impl->setMaxOutput(maxOutput); }
 
-float PID::getMaxOutput() const {
-    // Get maximum output
-    return 0; // Placeholder
-}
+float PID::getMaxOutput() const { return impl->getMaxOutput(); }
 
 void PID::setActivityTimeout(float s) const {
-    // Set activity timeout
+    impl->setActivityTimeout(s);
 }
