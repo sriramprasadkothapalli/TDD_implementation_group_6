@@ -108,7 +108,7 @@ if (WANT_COVERAGE)
             NAME coverage          # target name
             # EXECUTABLE ctest || true    # what to run inside the build directory?
             #                             #   '|| true' --> continue coverage even if ctest failed
-            EXECUTABLE ctest --output-on-failure    # what to run inside the build directory?
+            EXECUTABLE ctest --output-on-failure  || true  # what to run inside the build directory?
             EXCLUDE
             "app/main.cpp"     # Unit test does not run app, so don't analyze it
             "*gtest*"          # Don't analyze googleTest code

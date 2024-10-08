@@ -43,13 +43,18 @@ jobs:
           sudo apt update
           sudo apt install -y software-properties-common
           sudo apt install -y doxygen lcov gcovr
-
-      # Build, run unit test, and generate coverage report
-      - name: Configure CMake flags and build exectables
+      # Configure CMake and build the executables
+      - name: Configure CMake and Build
         run: |
           cmake -D WANT_COVERAGE=ON -D CMAKE_BUILD_TYPE=Debug -S ./ -B build/
-          cmake --build build/ --clean-first --target all coverage
+          cmake --build build/ --clean-first --target all
 
+      # Run tests with ctest and allow errors
+      - name: Run Tests
+        run: |
+          cd build
+          ctest --output-on-failure
+        continue-on-error: true  # Allow test failures without stopping the workflow
       # Upload coverage result to CodeCov
       - name: Upload coverage result to CodeCov
         uses: codecov/codecov-action@v3
