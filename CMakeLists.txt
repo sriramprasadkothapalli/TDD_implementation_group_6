@@ -78,17 +78,7 @@ if (NOT CMAKE_BUILD_TYPE MATCHES "Debug")
     set(WANT_COVERAGE OFF)
 endif ()
 
-if (WANT_COVERAGE)
-    message("Enabling coverage")
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
-    include(CodeCoverage)
-    # The following line come from cmake-modules/CodeCoverage.cmake
-    append_coverage_compiler_flags() # will add "--coverage" compilation flag
-    # Exclude certain directories from coverage analysis
-    set(COVERAGE_EXCLUDES
-            ${PROJECT_BINARY_DIR}
-    )
-endif ()
+
 
 #
 # c++ Boilerplate Modification Starts Here
@@ -110,27 +100,51 @@ doxygen_add_docs(docs           # target name
 # create targets for building code coverage reports
 if (WANT_COVERAGE)
     # unit test coverage:
-    setup_target_for_coverage_lcov( # use lcov to generate coverage report
-            NAME test_coverage          # target name
-            # EXECUTABLE ctest || true    # what to run inside the build directory?
-            #                             #   '|| true' --> continue coverage even if ctest failed
-            EXECUTABLE ctest --output-on-failure    # what to run inside the build directory?
-            EXCLUDE
-            "app/main.cpp"     # Unit test does not run app, so don't analyze it
-            "*gtest*"          # Don't analyze googleTest code
-            "/usr/include/*"   # Don't analyze system headers
-    )
+    # setup_target_for_coverage_lcov( # use lcov to generate coverage report
+    #         NAME test_coverage          # target name
+    #         # EXECUTABLE ctest || true    # what to run inside the build directory?
+    #         #                             #   '|| true' --> continue coverage even if ctest failed
+    #         EXECUTABLE ctest --output-on-failure    # what to run inside the build directory?
+    #         EXCLUDE
+    #         "app/main.cpp"     # Unit test does not run app, so don't analyze it
+    #         "*gtest*"          # Don't analyze googleTest code
+    #         "/usr/include/*"   # Don't analyze system headers
+    # )
 
-    # code coverage for the app (shell-app):
-    # Use gcovr insetad of lcov if you want to see branch coverage as well
-    setup_target_for_coverage_gcovr_html( # use gcovr to generate coverage report
-            NAME app_coverage          # target name
-            EXECUTABLE pid_controller      # what to run inside the build directory?
-            EXCLUDE
-            "test/test.cpp"    # App does not run unit test, so don't analyze it
-            "test/main.cpp"    # App does not run unit test, so don't analyze it
-    )
+    # # code coverage for the app (shell-app):
+    # # Use gcovr insetad of lcov if you want to see branch coverage as well
+    # setup_target_for_coverage_gcovr_html( # use gcovr to generate coverage report
+    #         NAME app_coverage          # target name
+    #         EXECUTABLE pid_controller      # what to run inside the build directory?
+    #         EXCLUDE
+    #         "test/test.cpp"    # App does not run unit test, so don't analyze it
+    #         "test/main.cpp"    # App does not run unit test, so don't analyze it
+    # )
+# Enable code coverage
+option(WANT_COVERAGE "Enable coverage reporting" ON)
+if(WANT_COVERAGE)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+    endif()
+endif()
 
+# Create a coverage target
+find_program(LCOV_PATH lcov)
+find_program(GENHTML_PATH genhtml)
+
+if(LCOV_PATH AND GENHTML_PATH)
+    add_custom_target(coverage
+        COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
+        COMMAND ${LCOV_PATH} --remove coverage.info '/usr/*' --output-file coverage.info
+        COMMAND ${LCOV_PATH} --list coverage.info
+        COMMAND ${GENHTML_PATH} coverage.info --output-directory coverage_report
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Generating code coverage report"
+        VERBATIM
+    )
+endif()
 endif ()
 
 # Sanity check:
