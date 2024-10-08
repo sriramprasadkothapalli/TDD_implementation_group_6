@@ -1,7 +1,7 @@
 # TDD_implementation_group_6
 
-
 # TDD implementation group 6 Badges
+
 ![CICD Workflow status](https://github.com/TommyChangUMD/cpp-boilerplate-v2/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg) [![codecov](https://codecov.io/gh/sriramprasadkothapalli/TDD_implementation_group_6/branch/main/graph/badge.svg)](https://codecov.io/gh/sriramprasadkothapalli/TDD_implementation_group_6) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Overview
@@ -10,14 +10,14 @@ PID Controller implementation for ACME Robotics. This is part of Test Driven Dev
 <br>TDD group number 6 Pair A <br>
 Pair A member names and roles
 
-| Role / Part | Part 1                    | Part 2 |
-|-------------|---------------------------|--------|
-| Navigator   | Sri ram Prasad Kothapalli |        |
-| Driver      | Anirudh Swarankar         |        |
+| Role / Part | Part 1                    | Part 2                  |
+|-------------|---------------------------|-------------------------|
+| Navigator   | Sri ram Prasad Kothapalli | Apoorv Thapliyal        |
+| Driver      | Anirudh Swarankar         | Amogha Thalihalla Sunil |
 
 ## Design overview
 
-![UML diagram](https://github.com/sriramprasadkothapalli/TDD_implementation_group_6/blob/main/UML/version_1.jpeg)
+![UML diagram](https://github.com/sriramprasadkothapalli/TDD_implementation_group_6/blob/main/UML/version_2.jpeg)
 
 ## Installation instructions
 
