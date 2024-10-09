@@ -1,6 +1,6 @@
-# TDD_implementation_group_6
+#TDD_implementation_group_6
 
-# TDD implementation group 6 Badges
+#TDD implementation group 6 Badges
 
 ![CICD Workflow status](https://github.com/sriramprasadkothapalli/TDD_implementation_group_6/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg) [![codecov](https://codecov.io/gh/sriramprasadkothapalli/TDD_implementation_group_6/branch/main/graph/badge.svg)](https://codecov.io/gh/sriramprasadkothapalli/TDD_implementation_group_6) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -22,25 +22,25 @@ Pair A member names and roles
 ## Installation instructions
 
 ```bash
-# Download the code:
+#Download the code:
   git clone https://github.com/sriramprasadkothapalli/TDD_implementation_group_6.git
   cd TDD_implementation_group_6
-# Configure the project and generate a native build system:
-  # Must re-run this command whenever any CMakeLists.txt file has been changed.
+#Configure the project and generate a native build system:
+#Must re - run this command whenever any CMakeLists.txt file has been changed.
   cmake -S ./ -B build/
-# Compile and build the project:
+#Compile and build the project:
   cmake --build build/ --clean-first --verbose
-# Run program:
+#Run program:
   ./build/app/pid_controller
-# Run tests:
+#Run tests:
   ctest --test-dir build/
-# Build docs:
+#Build docs:
   cmake --build build/ --target docs
-  # open a web browser to browse the doc
+#open a web browser to browse the doc
   open docs/html/index.html
-# Clean
+#Clean
   cmake --build build/ --target clean
-# Clean and start over:
+#Clean and start over:
   rm -rf build/
 ```
 
