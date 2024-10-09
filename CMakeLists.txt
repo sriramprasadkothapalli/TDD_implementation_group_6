@@ -28,10 +28,6 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 include(GoogleTest)
 
-# Include the CodeCoverage.cmake module
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
-include(CodeCoverage)
-
 #
 # Doxygen Support check if Doxygen is installed
 # ref: https://cmake.org/cmake/help/latest/module/FindDoxygen.html
@@ -82,7 +78,17 @@ if (NOT CMAKE_BUILD_TYPE MATCHES "Debug")
     set(WANT_COVERAGE OFF)
 endif ()
 
-
+if (WANT_COVERAGE)
+    message("Enabling coverage")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
+    include(CodeCoverage)
+    # The following line come from cmake-modules/CodeCoverage.cmake
+    append_coverage_compiler_flags() # will add "--coverage" compilation flag
+    # Exclude certain directories from coverage analysis
+    set(COVERAGE_EXCLUDES
+            ${PROJECT_BINARY_DIR}
+    )
+endif ()
 
 #
 # c++ Boilerplate Modification Starts Here
@@ -105,10 +111,10 @@ doxygen_add_docs(docs           # target name
 if (WANT_COVERAGE)
     # unit test coverage:
     setup_target_for_coverage_lcov( # use lcov to generate coverage report
-            NAME coverage          # target name
-            EXECUTABLE ctest || true    # what to run inside the build directory?
+            NAME test_coverage          # target name
+            # EXECUTABLE ctest || true    # what to run inside the build directory?
             #                             #   '|| true' --> continue coverage even if ctest failed
-            # EXECUTABLE ctest --output-on-failure  || true  # what to run inside the build directory?
+            EXECUTABLE ctest --output-on-failure    # what to run inside the build directory?
             EXCLUDE
             "app/main.cpp"     # Unit test does not run app, so don't analyze it
             "*gtest*"          # Don't analyze googleTest code
@@ -124,8 +130,6 @@ if (WANT_COVERAGE)
             "test/test.cpp"    # App does not run unit test, so don't analyze it
             "test/main.cpp"    # App does not run unit test, so don't analyze it
     )
-# Enable code coverage
-option(WANT_COVERAGE "Enable coverage reporting" ON)
 
 endif ()
 

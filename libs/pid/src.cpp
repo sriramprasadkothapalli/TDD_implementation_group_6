@@ -31,13 +31,8 @@ public:
 
     [[nodiscard]] float getMaxOutput() const;
 
-    void resetActivityCounter();
-
     void setActivityTimeout(float s);
 
-    [[nodiscard]] float getActivityTimeout() const;
-
-    /// Reset the sum of the previous errors to zero.
     void resetIntegral();
 
     ~PIDImpl() = default;
@@ -102,25 +97,8 @@ float PIDImpl::update(uint16_t input) {
     // Update the average
     _prevInput -= diff;
 
-    // Check if we can turn off the motor
-    if (_activityCount >= _activityThres && _activityThres) {
-        float filtError = static_cast<float>(_setpoint) - _prevInput;
-        if (filtError >= static_cast<float>(-_errThres) && filtError <= static_cast<float>(_errThres)) {
-            _errThres = 2; // hysteresis
-            return 0;
-        } else {
-            _errThres = 1;
-        }
-    } else {
-        ++_activityCount;
-        _errThres = 1;
-    }
-
-    bool backward = false;
-    int32_t calcIntegral = backward ? newIntegral : _integral;
-
     // Standard PID rule
-    float output = _kp * static_cast<float>(error) + _ki_Ts * static_cast<float>(calcIntegral) + _kd_Ts * diff;
+    float output = _kp * static_cast<float>(error) + _ki_Ts * static_cast<float>(_integral) + _kd_Ts * diff;
 
     // Clamp and anti-windup
     if (output > _maxOutput)
@@ -153,21 +131,6 @@ void PIDImpl::setMaxOutput(float maxOutput) {
 
 float PIDImpl::getMaxOutput() const {
     return this->_maxOutput;
-}
-
-void PIDImpl::setActivityTimeout(const float s) {
-    if (s == 0)
-        _activityThres = 0;
-    else
-        _activityThres = static_cast<uint16_t>(s / Ts) == 0 ? 1 : static_cast<uint16_t>(s / Ts);
-}
-
-float PIDImpl::getActivityTimeout() const {
-    return _activityThres;
-}
-
-void PIDImpl::resetActivityCounter() {
-    this->_activityCount = 0;
 }
 
 void PIDImpl::resetIntegral() {
@@ -203,7 +166,3 @@ uint16_t PID::getSetpoint() const { return impl->getSetpoint(); }
 void PID::setMaxOutput(float maxOutput) const { impl->setMaxOutput(maxOutput); }
 
 float PID::getMaxOutput() const { return impl->getMaxOutput(); }
-
-void PID::setActivityTimeout(float s) const {
-    impl->setActivityTimeout(s);
-}

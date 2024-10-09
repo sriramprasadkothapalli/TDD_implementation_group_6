@@ -88,11 +88,6 @@ public:
      */
     [[nodiscard]] float getMaxOutput() const;
 
-    /**
-     *@brief Set the number of seconds after which the motor is turned off, zero to keep it on indefinitely.
-     */
-    void setActivityTimeout(float s) const;
-
 private:
     /**
     * @brief pointer to PID implementation

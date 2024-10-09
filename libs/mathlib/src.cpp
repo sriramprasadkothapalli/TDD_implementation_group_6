@@ -7,15 +7,12 @@ namespace mathlib {
     }
     template double clamp<double>(double value, double min_v, double max_v);
     template int clamp<int>(int value, int min_v, int max_v);
-    template float clamp<float>(float value, float min_v, float max_v);
 
     template<typename T>
     int sign(T val) {
         return ((val > 0) - (val < 0));
     }
     template int sign(int val);
-    template int sign(float val);
-    template int sign(double val);
 
     constexpr float horner_impl(float xa, const float *p, size_t count,
                                 float t) {
