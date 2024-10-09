@@ -1,6 +1,6 @@
-#TDD_implementation_group_6
+# TDD_implementation_group_6
 
-#TDD implementation group 6 Badges
+# TDD implementation group 6 Badges
 
 ![CICD Workflow status](https://github.com/sriramprasadkothapalli/TDD_implementation_group_6/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg) [![codecov](https://codecov.io/gh/sriramprasadkothapalli/TDD_implementation_group_6/branch/main/graph/badge.svg)](https://codecov.io/gh/sriramprasadkothapalli/TDD_implementation_group_6) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -18,6 +18,27 @@ Pair A member names and roles
 ## Design overview
 
 ![UML diagram](https://github.com/sriramprasadkothapalli/TDD_implementation_group_6/blob/main/UML/version_2.png)
+
+The project consists of two key libraries: Mathlib and PID Library.
+
+1. **Mathlib**:
+    - **Purpose**: Mathlib provides essential mathematical functions required by the project, packaged within the
+      mathlib namespace.
+    - **Design**: It is structured as a shared library, ensuring reusability and modularity. By employing a shared
+      library, multiple executables or other projects can leverage the mathlib namespace without duplicating code,
+      fostering efficiency and maintainability.
+    - **Advantages**:
+        - **Modularity**: Clearly separated mathematical operations promote clean code and ease of future extension.
+        - **Reusability**: Sharing across different executables without redundancy.
+2. **PID**:
+    - **Purpose**: This library handles the implementation of a PID (Proportional-Integral-Derivative) controller.
+    - **Design**: The actual PID implementation is encapsulated within PIDImpl, and only a pointer to this
+      implementation is exposed to the user. This abstraction ensures that the underlying complexity is hidden, enabling
+      users to interact with a simplified API while maintaining flexibility in internal changes without affecting
+      external users.
+    - **Advantages**:
+        - **Encapsulation**: Hides internal complexities, simplifying interface usage.
+        - **Flexibility**: Allows changes to the implementation without impacting the external API.
 
 ## Installation instructions
 
