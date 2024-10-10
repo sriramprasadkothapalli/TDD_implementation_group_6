@@ -1,0 +1,4 @@
+clang-format -i --style=Google $(find . -name *.cpp -o -name *.hpp | grep -v "/build/")
+echo $?
+0
+
